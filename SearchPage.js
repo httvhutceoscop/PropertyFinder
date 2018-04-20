@@ -10,6 +10,23 @@ import {
     Image,
 } from 'react-native';
 
+function urlForQueryAndPage(key, value, pageNumber) {
+    const data = {
+        country: 'uk',
+        pretty: '1',
+        encoding: 'json',
+        listing_type: 'buy',
+        action: 'search_listings',
+        page: pageNumber,
+    };
+    data[key] = value;
+    const querystring = Object.keys(data)
+        .map(key => key + '=' + encodeURIComponent(data[key]))
+        .join('&');
+
+    return 'https://api.nestoria.co.uk/api?' + querystring;
+}
+
 export default class SearchPage extends Component<{}>{
     static navigationOptions = {
         title : 'Property Finder',
@@ -17,16 +34,23 @@ export default class SearchPage extends Component<{}>{
     constructor(props) {
         super(props);
         this.state = {
-            searchString: 'london'
+            searchString: 'london',
+            isLoading: false,
         }
     }
     _onSearchTextChanged = (event) => {
-        console.log('_onSearchTextChanged');
         this.setState({searchString:event.nativeEvent.text});
-        console.log('Current: '+this.state.searchString+', Next: '+event.nativeEvent.text);
+    };
+    _excuteQuery = (query) => {
+        console.log(query);
+        this.setState({ isLoading:true });
+    };
+    _onSearchPressed = () => {
+        const query = urlForQueryAndPage('place_name',this.state.searchString,1);
+        this._excuteQuery(query);
     };
     render() {
-        console.log('SearchPage.render');
+        const spinner = this.state.isLoading ? <ActivityIndicator size='large' /> : null;
         return (
             <View style={styles.container}>
                 <Text style={styles.description}>
@@ -44,12 +68,13 @@ export default class SearchPage extends Component<{}>{
                         placeholder={'Search via name or postcode'}
                     />
                     <Button
-                        onPress={() => {}}
+                        onPress={this._onSearchPressed}
                         color='#48BBEC'
                         title='Go'
                     />
                 </View>
                 <Image source={require('./Resources/house.png')} style={styles.image} />
+                {spinner}
             </View>
         )
     }
