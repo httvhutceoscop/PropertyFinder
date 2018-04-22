@@ -5,7 +5,8 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  NavigatorIOS
 } from 'react-native';
 import {StackNavigator} from 'react-navigation';
 import SearchPage from './SearchPage';
@@ -17,7 +18,24 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-const App = StackNavigator({
-    Home: { screen: SearchPage },
+// const App = StackNavigator({
+//     Home: { screen: SearchPage },
+// });
+export default class App extends Component<{}> {
+  render() {
+    return (
+      <NavigatorIOS
+        style={styles.container}
+        initialRoute={{
+          title: 'Home',
+          component: SearchPage,
+        }}/>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
 });
-export default App;
